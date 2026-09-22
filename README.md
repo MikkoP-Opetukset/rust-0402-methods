@@ -1,1 +1,3 @@
-# rust-0402-methods
+# 0402: Methods
+
+Material for the Rust Programming course @ SAMK
