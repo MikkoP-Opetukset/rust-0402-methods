@@ -3,9 +3,9 @@
 /// This file continues the small game-world theme from the structs example.
 /// Methods put behavior next to the data type that behavior works with.
 fn main() {
-    methods_with_an_immutable_receiver();
-    methods_with_a_mutable_receiver();
-    methods_with_more_parameters();
+    immutable_receiver();
+    mutable_receiver();
+    more_parameters();
     associated_functions();
     multiple_impl_blocks();
 }
@@ -33,9 +33,9 @@ struct HardcoreMode;
 /// - Inside the method, `self` refers to the value before the dot.
 /// - Rust automatically borrows a value when calling a method that needs
 ///   `&self`, so `hero.status()` works without writing `(&hero).status()`.
-fn methods_with_an_immutable_receiver() {
+fn immutable_receiver() {
     println!("\n{:=>80}", "");
-    println!("methods_with_an_immutable_receiver()\n");
+    println!("immutable_receiver()\n");
 
     let hero = Character::new_player("Iines", 3);
 
@@ -48,9 +48,9 @@ fn methods_with_an_immutable_receiver() {
 /// - `&mut self` borrows the value mutably, so the caller needs a mutable
 ///   binding.
 /// - A mutable method can update the fields of the value it receives.
-fn methods_with_a_mutable_receiver() {
+fn mutable_receiver() {
     println!("\n{:=>80}", "");
-    println!("methods_with_a_mutable_receiver()\n");
+    println!("mutable_receiver()\n");
 
     let mut hero = Character::new_player("Iines", 3);
     hero.take_damage(35);
@@ -66,9 +66,9 @@ fn methods_with_a_mutable_receiver() {
 /// - Parameters after `self` work like ordinary function parameters.
 /// - Borrowing both positions lets us compare them without transferring
 ///   ownership of either value.
-fn methods_with_more_parameters() {
+fn more_parameters() {
     println!("\n{:=>80}", "");
-    println!("methods_with_more_parameters()\n");
+    println!("more_parameters()\n");
 
     let hero_position = MapPosition(4, 9);
     let treasure_position = MapPosition(10, 6);
@@ -120,6 +120,20 @@ fn multiple_impl_blocks() {
 
 // Implementing methods for the structs.
 impl Character {
+    /// Prints information without changing the character.
+    fn status(&self) {
+        let controller = if self.is_npc { "NPC" } else { "player" };
+        println!(
+            "{} is a level {} {controller} with {} health.",
+            self.name, self.level, self.health
+        );
+    }
+
+    /// Reduces health, stopping at zero instead of underflowing.
+    fn take_damage(&mut self, amount: u32) {
+        self.health = self.health.saturating_sub(amount);
+    }
+
     /// Creates a player-controlled character.
     fn new_player(name: &str, level: u32) -> Self {
         Self {
@@ -138,20 +152,6 @@ impl Character {
             level,
             is_npc: true,
         }
-    }
-
-    /// Prints information without changing the character.
-    fn status(&self) {
-        let controller = if self.is_npc { "NPC" } else { "player" };
-        println!(
-            "{} is a level {} {controller} with {} health.",
-            self.name, self.level, self.health
-        );
-    }
-
-    /// Reduces health, stopping at zero instead of underflowing.
-    fn take_damage(&mut self, amount: u32) {
-        self.health = self.health.saturating_sub(amount);
     }
 }
 
